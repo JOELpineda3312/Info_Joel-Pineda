@@ -3,55 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Información del Empleado</title>
+    <title>Perfil Futurista - Mujer</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #72EDF2 10%, #5151E5 100%);
+            background: linear-gradient(130deg, #ff9a9e 20%, #fad0c4 80%);
             display: flex;
             justify-content: center;
-            align-items: flex-start;
+            align-items: center;
             min-height: 100vh;
             margin: 0;
-            color: #333;
+            color: #ffffff;
+            overflow-y: scroll;
             overflow-x: hidden;
+            perspective: 1000px;
             position: relative;
+            transition: all 0.5s ease;
         }
+
+        .toggle-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 10px 20px;
+            background-color: gray;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.5s ease;
+        }
+
         .card {
-            background: #f3f3f3;
-            border-radius: 15px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             overflow: hidden;
-            width: 90%;
-            max-width: 600px;
+            width: 85%;
+            max-width: 500px;
             text-align: center;
-            transition: transform 0.3s ease;
-            margin: 20px auto;
+            transform: rotateY(20deg) rotateX(10deg);
+            transition: transform 0.6s ease;
+            margin: 50px 0;
         }
+
         .card:hover {
-            transform: translateY(-10px);
+            transform: rotateY(0) rotateX(0);
         }
+
         .card img {
-            width: 150px;
-            height: 150px;
+            width: 140px;
+            height: 140px;
             border-radius: 50%;
             margin-top: 20px;
             object-fit: cover;
-            transition: transform 1s ease;
-            border: 5px solid #fff;
+            transition: transform 0.6s ease;
+            border: 4px solid #ff7eb9;
         }
+
         .card img:hover {
-            transform: scale(1.1);
+            transform: scale(1.2);
         }
+
         .card-body {
             padding: 20px;
         }
+
         .card-body h2 {
             margin: 10px 0;
             font-size: 1.8em;
-            color: #5151E5;
+            color: #ff7eb9;
+            letter-spacing: 1px;
         }
+
         .card-body .info {
             display: flex;
             justify-content: space-between;
@@ -59,37 +83,43 @@
             margin: 10px 0;
             text-align: left;
             padding: 10px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid #ddd;
         }
+
         .card-body .info:last-child {
             border-bottom: none;
         }
+
         .card-body .info strong {
             min-width: 150px;
-            color: #5151E5;
+            color: #ff7eb9;
         }
+
         .card-body .info span {
             flex: 1;
-            color: #333;
+            color: #333333;
             text-align: right;
             padding-left: 20px;
         }
+
         .card-body .info a {
-            color: #1a73e8;
+            color: #ff4d6d;
             text-decoration: none;
             transition: color 0.3s ease;
         }
+
         .card-body .info a:hover {
-            color: #0056b3;
+            color: #e63946;
         }
+
         @media (max-width: 600px) {
             .card {
                 width: calc(100% - 40px);
                 margin: 10px;
             }
             .card img {
-                width: 120px;
-                height: 120px;
+                width: 100px;
+                height: 100px;
             }
             .card-body .info {
                 flex-direction: column;
@@ -104,55 +134,124 @@
                 text-align: left;
             }
         }
-        .snowflake {
+
+        .background-circles {
             position: absolute;
-            top: -10px;
-            background-color: #fff;
-            border-radius: 50%;
-            opacity: 0.9;
-            pointer-events: none;
-            animation: fall linear infinite;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
         }
-        @keyframes fall {
-            to {
-                transform: translateY(100vh);
-            }
+
+        .background-circles div {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            animation: moveCircles 10s infinite linear;
+            pointer-events: all;
+            touch-action: none;
+        }
+
+        .background-circles div:nth-child(1) { width: 120px; height: 120px; top: 10%; left: 20%; }
+        .background-circles div:nth-child(2) { width: 80px; height: 80px; top: 30%; left: 70%; }
+        .background-circles div:nth-child(3) { width: 150px; height: 150px; top: 60%; left: 10%; }
+        .background-circles div:nth-child(4) { width: 100px; height: 100px; top: 80%; left: 50%; }
+        .background-circles div:nth-child(5) { width: 140px; height: 140px; top: 20%; left: 40%; }
+        .background-circles div:nth-child(6) { width: 60px; height: 60px; top: 70%; left: 80%; }
+        .background-circles div:nth-child(7) { width: 90px; height: 90px; top: 50%; left: 60%; }
+        .background-circles div:nth-child(8) { width: 110px; height: 110px; top: 40%; left: 30%; }
+        .background-circles div:nth-child(9) { width: 160px; height: 160px; top: 90%; left: 65%; }
+        .background-circles div:nth-child(10) { width: 130px; height: 130px; top: 10%; left: 35%; }
+
+        @keyframes moveCircles {
+            0% { transform: translateY(0) translateX(0); }
+            50% { transform: translateY(10px) translateX(10px); }
+            100% { transform: translateY(0) translateX(0); }
+        }
+
+        .draggable {
+            position: absolute;
+            cursor: pointer;
+            touch-action: none;
+            user-select: none;
+            animation: bounce 4s infinite alternate;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
     </style>
 </head>
 <body>
 
+<button id="toggleButton" class="toggle-button">OFF</button>
+
+
+
+<div class="background-circles">
+    <div class="draggable"></div>
+    <div class="draggable"></div>
+    <div class="draggable"></div>
+    <div class="draggable"></div>
+    <div class="draggable"></div>
+    <div class="draggable"></div>
+    <div class="draggable"></div>
+    <div class="draggable"></div>
+</div>
+
 <div class="card">
-    <img src="https://scontent-bog2-2.xx.fbcdn.net/v/t39.30808-1/412380344_1400546774200704_2423590953931892783_n.jpg?stp=dst-jpg_p200x200&_nc_cat=101&ccb=1-7&_nc_sid=5f2048&_nc_eui2=AeGOxoU5wYKICUp8xXqGsFcNUbc4inMF5vtRtziKcwXm-6DsK21_uqjXWxOmRaBDAIju0O04SfjxGQEcVqNA4deR&_nc_ohc=el0sP67m6bwQ7kNvgHDXHcw&_nc_ht=scontent-bog2-2.xx&oh=00_AYAXC-LULDmejavX3-OLTlJSXD_C-Nf4n8pVP9xSHcoOOw&oe=666E501C" alt="Employee Photo">
+    <img src="https://scontent.fsvz2-1.fna.fbcdn.net/v/t39.30808-6/312940544_6369491833077826_1217130326141616601_n.jpg?_nc_cat=101&amp;ccb=1-7&amp;_nc_sid=6ee11a&amp;_nc_eui2=AeFh-WMFzZL3M7shDuJ8bmtbMy-WeSqx1aczL5Z5KrHVp039Mdivb2c6S71mOjYuG4nB0Jm_Ou0fSydc6o8qefri&amp;_nc_ohc=6abn-0iWxsYQ7kNvgF1WFK3&amp;_nc_ht=scontent.fsvz2-1.fna&amp;oh=00_AYCqovGx9EKgJCJKQdqYQEXsUkRHZbQsv4erFyvRBeWHCA&amp;oe=66DD1CA2" alt="Foto de Perfil">
     <div class="card-body">
-        <h2>Joel Steven Pineda Rincon</h2>
-        <div class="info"><strong>Cargo en el Proyecto:</strong> <span>Asegurador de Calidad</span></div>
-        <div class="info"><strong>Area:</strong> <span>Administrativa</span></div>
-        <div class="info"><strong>Nombres:</strong> <span>Joel Steven</span></div>
-        <div class="info"><strong>Apellidos:</strong> <span>Pineda Rincon</span></div>
+        <h2>Sandra Yurley Monterrey Jaimes</h2>
+        <div class="info"><strong>Cargo en el Proyecto:</strong> <span>Tutora</span></div>
+        <div class="info"><strong>Área:</strong> <span>Pedagógica</span></div>
+        <div class="info"><strong>Nombres:</strong> <span>Sandra Yurley</span></div>
+        <div class="info"><strong>Apellidos:</strong> <span>Monterrey Jaimes</span></div>
         <div class="info"><strong>Tipo de Documento:</strong> <span>C.C</span></div>
-        <div class="info"><strong>Numero de Documento:</strong> <span>1192757557</span></div>
-        <div class="info"><strong>Fecha de Expedición:</strong> <span>23/07/2021</span></div>
-        <div class="info"><strong>Edad:</strong> <span id="age">20 Años</span></div>
-        <div class="info"><strong>Fecha de nacimiento:</strong> <span id="birthdate">20/07/2003</span></div>
-        <div class="info"><strong>Estado Civil:</strong> <span>Soltero</span></div>
-        <div class="info"><strong>Hijos:</strong> <span>No</span></div>
-        <div class="info"><strong>Teléfono:</strong> <span><a href="https://wa.me/qr/CU6LVE57E2WMO1">3133118664</a></span></div>
-        <div class="info"><strong>Correo Electrónico:</strong> <span><a href="mailto:joelstevenpinedarincon20@gmail.com">joelstevenpinedarincon20@gmail.com</a></span></div>
-        <div class="info"><strong>País de nacimiento:</strong> <span>Colombia</span></div>
-        <div class="info"><strong>Ciudad de nacimiento:</strong> <span>Cucuta</span></div>
-        <div class="info"><strong>Tipo de sangre:</strong> <span>A+</span></div>
-        <div class="info"><strong>Dirección de residencia:</strong> <span>Av 10 k22 - 43 Cerro Norte</span></div>
-        <div class="info"><strong>Con quienes vive:</strong> <span>Papas y Hermano</span></div>
-        <div class="info"><strong>A que EPS pertenece:</strong> <span>Coosalud</span></div>
-        <div class="info"><strong>Servicio en la Iglesia:</strong> <span>Alabanza</span></div>
-        <div class="info"><strong>Grupo etario a cargo:</strong> <span>Ninguno</span></div>
-        <div class="info"><strong>Niños a cargo:</strong> <span>0</span></div>
-        <div class="info"><strong>Red Social:</strong> <span><a href="https://www.facebook.com/profile.php?id=100027361853507&locale=es_LA">Facebook</a></span></div>
+        <div class="info"><strong>Número de Documento:</strong> <a href="#1090419190"><font color="black">1090491190</font></a></div>
+        <div class="info"><strong>Fecha de Expedición:</strong> <span>12/09/2013</span></div>
+        <div class="info"><strong>Edad:</strong> <span id="age">29 años</span></div>
+        <div class="info"><strong>Fecha de Nacimiento:</strong> <span id="birthdate">28/07/1995</span></div>
+        <div class="info"><strong>Estado Civil:</strong> <span>Soltera</span></div>
+        <div class="info"><strong>Hijos:</strong> <span>0</span></div>
+        <div class="info"><strong>Teléfono:</strong> <span><a href="https://wa.me/qr/3222573737"><font color="black">3222573737</font></a></span></div>
+        <div class="info"><strong>Correo Electrónico:</strong> <span><a href="mailto:sandrayurley28@gmail.com"><font color="black">sandrayurley28@gmail.com</font></a></span></div>
+        <div class="info"><strong>País de Nacimiento:</strong> <span>Colombia</span></div>
+        <div class="info"><strong>Ciudad de Nacimiento:</strong> <span>Pamplona / N.S</span></div>
+        <div class="info"><strong>Tipo de Sangre:</strong> <span>O+</span></div>
+        <div class="info"><strong>Dirección de Residencia:</strong> <span>Calle 24 #6 - 40 Villas del Tejar</span></div>
+        <div class="info"><strong>Con Quiénes Vive:</strong> <span>Cuñada y Sobrina</span></div>
+        <div class="info"><strong>Teléfono de un Familiar con el que Vive:</strong> <span><a href="+573208294018"><font color="black">3208294018</font></a></span></div>
+        <div class="info"><strong>EPS:</strong> <span>Comfaoriente</span></div>
+        <div class="info"><strong>Servicio en la Iglesia:</strong> <span>No aplica</span></div>
+        <div class="info"><strong>Grupo Etario a Cargo:</strong> <span>Huellas</span></div>
+        <div class="info"><strong>Niños a Cargo:</strong> <span>72</span></div>
+        <div class="info"><strong>Red Social:</strong> <span><a href="https://www.facebook.com/sandrayurley.monterreyjaimes?locale=es_LA"><font color="black">Facebook</font></a></span></div>
     </div>
 </div>
 
 <script>
+    const toggleButton = document.getElementById('toggleButton');
+    let isOn = false;
+
+    toggleButton.addEventListener('click', function() {
+        isOn = !isOn;
+        if (isOn) {
+            document.body.style.background = 'linear-gradient(130deg, #fad0c4 20%, #ff9a9e 80%)';
+            document.body.style.color = '#9400D3';
+            toggleButton.textContent = 'ON';
+            toggleButton.style.backgroundColor = '#ffa0bd';
+            toggleButton.style.color = 'black';
+        } else {
+            document.body.style.background = 'linear-gradient(130deg, #ff9a9e 20%, #fad0c4 80%)';
+            document.body.style.color = '#ffffff';
+            toggleButton.textContent = 'OFF';
+            toggleButton.style.backgroundColor = 'gray';
+            toggleButton.style.color = 'white';
+        }
+    });
+
     function calculateAge(birthdate) {
         const now = new Date();
         const birthDate = new Date(birthdate);
@@ -178,24 +277,101 @@
         ageElem.textContent = calculateAge(birthdate);
     });
 
-    // Crear y animar los copos de nieve
-    function createSnowflake() {
-        const snowflake = document.createElement('div');
-        snowflake.className = 'snowflake';
-        snowflake.style.left = Math.random() * window.innerWidth + 'px';
-        snowflake.style.width = snowflake.style.height = Math.random() * 10 + 10 + 'px';
-        snowflake.style.animationDuration = Math.random() * 3 + 2 + 's';
-        snowflake.style.animationDelay = Math.random() * 5 + 's';
-        document.body.appendChild(snowflake);
+    // Hacer las esferas arrastrables y que reboten
+    document.querySelectorAll('.draggable').forEach(circle => {
+        let isDragging = false;
+        let velocityX = 0;
+        let velocityY = 0;
+        let lastX = 0;
+        let lastY = 0;
+        let moveInterval;
 
-        // Eliminar el copo de nieve después de que se haya animado fuera de la pantalla
-        setTimeout(() => {
-            snowflake.remove();
-        }, 5000);
-    }
+        circle.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            lastX = e.clientX;
+            lastY = e.clientY;
 
-    // Crear múltiples copos de nieve
-    setInterval(createSnowflake, 200);
+            const onMouseMove = (e) => {
+                if (isDragging) {
+                    const deltaX = e.clientX - lastX;
+                    const deltaY = e.clientY - lastY;
+                    circle.style.left = (circle.offsetLeft + deltaX) + 'px';
+                    circle.style.top = (circle.offsetTop + deltaY) + 'px';
+                    velocityX = deltaX;
+                    velocityY = deltaY;
+                    lastX = e.clientX;
+                    lastY = e.clientY;
+                }
+            };
+
+            document.addEventListener('mousemove', onMouseMove);
+
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+                document.removeEventListener('mousemove', onMouseMove);
+                animateBounce(circle, velocityX, velocityY);
+            });
+        });
+
+        // Para dispositivos táctiles
+        circle.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            lastX = e.touches[0].clientX;
+            lastY = e.touches[0].clientY;
+
+            const onTouchMove = (e) => {
+                if (isDragging) {
+                    const deltaX = e.touches[0].clientX - lastX;
+                    const deltaY = e.touches[0].clientY - lastY;
+                    circle.style.left = (circle.offsetLeft + deltaX) + 'px';
+                    circle.style.top = (circle.offsetTop + deltaY) + 'px';
+                    velocityX = deltaX;
+                    velocityY = deltaY;
+                    lastX = e.touches[0].clientX;
+                    lastY = e.touches[0].clientY;
+                }
+            };
+
+            document.addEventListener('touchmove', onTouchMove);
+
+            document.addEventListener('touchend', () => {
+                isDragging = false;
+                document.removeEventListener('touchmove', onTouchMove);
+                animateBounce(circle, velocityX, velocityY);
+            });
+        });
+
+        function animateBounce(element, vx, vy) {
+            const damping = 0.95;
+            const gravity = 0.5;
+
+            function bounce() {
+                let left = element.offsetLeft + vx;
+                let top = element.offsetTop + vy;
+
+                if (left <= 0 || left + element.clientWidth >= window.innerWidth) {
+                    vx = -vx * damping;
+                    left = left <= 0 ? 0 : window.innerWidth - element.clientWidth;
+                }
+                if (top <= 0 || top + element.clientHeight >= window.innerHeight) {
+                    vy = -vy * damping;
+                    top = top <= 0 ? 0 : window.innerHeight - element.clientHeight;
+                } else {
+                    vy += gravity;
+                }
+
+                element.style.left = left + 'px';
+                element.style.top = top + 'px';
+
+                if (Math.abs(vx) > 0.5 || Math.abs(vy) > 0.5) {
+                    moveInterval = requestAnimationFrame(bounce);
+                } else {
+                    cancelAnimationFrame(moveInterval);
+                }
+            }
+            moveInterval = requestAnimationFrame(bounce);
+        }
+    });
 </script>
 
 </body>

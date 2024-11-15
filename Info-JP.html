@@ -1,379 +1,47 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" href="https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.freepik.es%2Fvectores%2Ficono-corazon-instagram&psig=AOvVaw1Y2zVudieu-bD3fCBWCFQ_&ust=1725543495781000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCOC50sy0qYgDFQAAAAAdAAAAABAE" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sandra Monterrery</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <title>Prueba de Cámara</title>
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
-            background: linear-gradient(130deg, #ff9a9e 20%, #fad0c4 80%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            color: #ffffff;
-            overflow-y: scroll;
-            overflow-x: hidden;
-            perspective: 1000px;
-            position: relative;
-            transition: all 0.5s ease;
-        }
-
-        .toggle-button {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            padding: 10px 20px;
-            background-color: gray;
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: all 0.5s ease;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            overflow: hidden;
-            width: 85%;
-            max-width: 500px;
+            font-family: Arial, sans-serif;
             text-align: center;
-            transform: rotateY(20deg) rotateX(10deg);
-            transition: transform 0.6s ease;
-            margin: 50px 0;
+            margin: 0;
+            padding: 0;
         }
-
-        .card:hover {
-            transform: rotateY(0) rotateX(0);
-        }
-
-        .card img {
-            width: 140px;
-            height: 140px;
-            border-radius: 50%;
-            margin-top: 20px;
-            object-fit: cover;
-            transition: transform 0.6s ease;
-            border: 4px solid #ff7eb9;
-        }
-
-        .card img:hover {
-            transform: scale(1.2);
-        }
-
-        .card-body {
-            padding: 20px;
-        }
-
-        .card-body h2 {
-            margin: 10px 0;
-            font-size: 1.8em;
-            color: #ff7eb9;
-            letter-spacing: 1px;
-        }
-
-        .card-body .info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 10px 0;
-            text-align: left;
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .card-body .info:last-child {
-            border-bottom: none;
-        }
-
-        .card-body .info strong {
-            min-width: 150px;
-            color: #ff7eb9;
-        }
-
-        .card-body .info span {
-            flex: 1;
-            color: #333333;
-            text-align: right;
-            padding-left: 20px;
-        }
-
-        .card-body .info a {
-            color: #ff4d6d;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .card-body .info a:hover {
-            color: #e63946;
-        }
-
-        @media (max-width: 600px) {
-            .card {
-                width: calc(100% - 40px);
-                margin: 10px;
-            }
-            .card img {
-                width: 100px;
-                height: 100px;
-            }
-            .card-body .info {
-                flex-direction: column;
-                text-align: left;
-                padding: 5px;
-            }
-            .card-body .info strong {
-                min-width: auto;
-                margin-bottom: 5px;
-            }
-            .card-body .info span {
-                text-align: left;
-            }
-        }
-
-        .background-circles {
-            position: absolute;
+        video {
             width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: -1;
+            max-width: 400px;
+            margin: 20px auto;
+            border: 2px solid #333;
         }
-
-        .background-circles div {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            animation: moveCircles 10s infinite linear;
-            pointer-events: all;
-            touch-action: none;
-        }
-
-        .background-circles div:nth-child(1) { width: 120px; height: 120px; top: 10%; left: 20%; }
-        .background-circles div:nth-child(2) { width: 80px; height: 80px; top: 30%; left: 70%; }
-        .background-circles div:nth-child(3) { width: 150px; height: 150px; top: 60%; left: 10%; }
-        .background-circles div:nth-child(4) { width: 100px; height: 100px; top: 80%; left: 50%; }
-        .background-circles div:nth-child(5) { width: 140px; height: 140px; top: 20%; left: 40%; }
-        .background-circles div:nth-child(6) { width: 60px; height: 60px; top: 70%; left: 80%; }
-        .background-circles div:nth-child(7) { width: 90px; height: 90px; top: 50%; left: 60%; }
-        .background-circles div:nth-child(8) { width: 110px; height: 110px; top: 40%; left: 30%; }
-        .background-circles div:nth-child(9) { width: 160px; height: 160px; top: 90%; left: 65%; }
-        .background-circles div:nth-child(10) { width: 130px; height: 130px; top: 10%; left: 35%; }
-
-        @keyframes moveCircles {
-            0% { transform: translateY(0) translateX(0); }
-            50% { transform: translateY(10px) translateX(10px); }
-            100% { transform: translateY(0) translateX(0); }
-        }
-
-        .draggable {
-            position: absolute;
-            cursor: pointer;
-            touch-action: none;
-            user-select: none;
-            animation: bounce 4s infinite alternate;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
+    <h1>Prueba de Cámara</h1>
+    <video id="video" autoplay></video>
+    <div id="error" style="color: red; margin-top: 10px;"></div>
+    <script>
+        const video = document.getElementById("video");
+        const errorDisplay = document.getElementById("error");
 
-<button id="toggleButton" class="toggle-button">OFF</button>
-
-
-
-<div class="background-circles">
-    <div class="draggable"></div>
-    <div class="draggable"></div>
-    <div class="draggable"></div>
-    <div class="draggable"></div>
-    <div class="draggable"></div>
-    <div class="draggable"></div>
-    <div class="draggable"></div>
-    <div class="draggable"></div>
-</div>
-
-<div class="card">
-    <img src="https://scontent.fsvz2-1.fna.fbcdn.net/v/t39.30808-6/312940544_6369491833077826_1217130326141616601_n.jpg?_nc_cat=101&amp;ccb=1-7&amp;_nc_sid=6ee11a&amp;_nc_eui2=AeFh-WMFzZL3M7shDuJ8bmtbMy-WeSqx1aczL5Z5KrHVp039Mdivb2c6S71mOjYuG4nB0Jm_Ou0fSydc6o8qefri&amp;_nc_ohc=6abn-0iWxsYQ7kNvgF1WFK3&amp;_nc_ht=scontent.fsvz2-1.fna&amp;oh=00_AYCqovGx9EKgJCJKQdqYQEXsUkRHZbQsv4erFyvRBeWHCA&amp;oe=66DD1CA2" alt="Foto de Perfil">
-    <div class="card-body">
-        <h2>Sandra Yurley Monterrey Jaimes</h2>
-        <div class="info"><strong>Cargo en el Proyecto:</strong> <span>Tutora</span></div>
-        <div class="info"><strong>Área:</strong> <span>Pedagógica</span></div>
-        <div class="info"><strong>Nombres:</strong> <span>Sandra Yurley</span></div>
-        <div class="info"><strong>Apellidos:</strong> <span>Monterrey Jaimes</span></div>
-        <div class="info"><strong>Tipo de Documento:</strong> <span>C.C</span></div>
-        <div class="info"><strong>Número de Documento:</strong> <a href="#1090419190"><font color="black">1090491190</font></a></div>
-        <div class="info"><strong>Fecha de Expedición:</strong> <span>12/09/2013</span></div>
-        <div class="info"><strong>Edad:</strong> <span id="age">29 años</span></div>
-        <div class="info"><strong>Fecha de Nacimiento:</strong> <span id="birthdate">28/07/1995</span></div>
-        <div class="info"><strong>Estado Civil:</strong> <span>Soltera</span></div>
-        <div class="info"><strong>Hijos:</strong> <span>0</span></div>
-        <div class="info"><strong>Teléfono:</strong> <span><a href="tel:+573222573737"><font color="black">3222573737</font></a></span></div>
-        <div class="info"><strong>Correo Electrónico:</strong> <span><a href="mailto:sandrayurley28@gmail.com"><font color="black">sandrayurley28@gmail.com</font></a></span></div>
-        <div class="info"><strong>País de Nacimiento:</strong> <span>Colombia</span></div>
-        <div class="info"><strong>Ciudad de Nacimiento:</strong> <span>Pamplona / N.S</span></div>
-        <div class="info"><strong>Tipo de Sangre:</strong> <span>O+</span></div>
-        <div class="info"><strong>Dirección de Residencia:</strong> <span>Calle 24 #6 - 40 Villas del Tejar</span></div>
-        <div class="info"><strong>Con Quiénes Vive:</strong> <span>Cuñada y Sobrina</span></div>
-        <div class="info"><strong>Teléfono de un Familiar con el que Vive:</strong> <span><a href="tel:+573208294018"><font color="black">3208294018</font></a></span></div>
-        <div class="info"><strong>EPS:</strong> <span>Comfaoriente</span></div>
-        <div class="info"><strong>Servicio en la Iglesia:</strong> <span>líder de jóvenes</span></div>
-        <div class="info"><strong>Grupo Etario a Cargo:</strong> <span>Huellas</span></div>
-        <div class="info"><strong>Niños a Cargo:</strong> <span>72</span></div>
-        <div class="info"><strong>Red Social:</strong> <span><a href="https://www.facebook.com/sandrayurley.monterreyjaimes?locale=es_LA"><font color="black">Facebook</font></a></span></div>
-    </div>
-</div>
-
-<script>
-    const toggleButton = document.getElementById('toggleButton');
-    let isOn = false;
-
-    toggleButton.addEventListener('click', function() {
-        isOn = !isOn;
-        if (isOn) {
-            document.body.style.background = 'linear-gradient(130deg, #fad0c4 20%, #ff9a9e 80%)';
-            document.body.style.color = '#9400D3';
-            toggleButton.textContent = 'ON';
-            toggleButton.style.backgroundColor = '#ffa0bd';
-            toggleButton.style.color = 'black';
-        } else {
-            document.body.style.background = 'linear-gradient(130deg, #ff9a9e 20%, #fad0c4 80%)';
-            document.body.style.color = '#ffffff';
-            toggleButton.textContent = 'OFF';
-            toggleButton.style.backgroundColor = 'gray';
-            toggleButton.style.color = 'white';
-        }
-    });
-
-    function calculateAge(birthdate) {
-        const now = new Date();
-        const birthDate = new Date(birthdate);
-        let ageYears = now.getFullYear() - birthDate.getFullYear();
-        let ageMonths = now.getMonth() - birthDate.getMonth();
-
-        if (ageMonths < 0 || (ageMonths === 0 && now.getDate() < birthDate.getDate())) {
-            ageYears--;
-            ageMonths += 12;
-        }
-
-        if (now.getDate() < birthDate.getDate()) {
-            ageMonths--;
-        }
-
-        return `${ageYears} años y ${ageMonths} meses`;
-    }
-
-    document.addEventListener("DOMContentLoaded", function() {
-        const birthdateElem = document.getElementById("birthdate");
-        const ageElem = document.getElementById("age");
-        const birthdate = birthdateElem.textContent.trim().split('/').reverse().join('-');
-        ageElem.textContent = calculateAge(birthdate);
-    });
-
-    // Hacer las esferas arrastrables y que reboten
-    document.querySelectorAll('.draggable').forEach(circle => {
-        let isDragging = false;
-        let velocityX = 0;
-        let velocityY = 0;
-        let lastX = 0;
-        let lastY = 0;
-        let moveInterval;
-
-        circle.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            lastX = e.clientX;
-            lastY = e.clientY;
-
-            const onMouseMove = (e) => {
-                if (isDragging) {
-                    const deltaX = e.clientX - lastX;
-                    const deltaY = e.clientY - lastY;
-                    circle.style.left = (circle.offsetLeft + deltaX) + 'px';
-                    circle.style.top = (circle.offsetTop + deltaY) + 'px';
-                    velocityX = deltaX;
-                    velocityY = deltaY;
-                    lastX = e.clientX;
-                    lastY = e.clientY;
-                }
-            };
-
-            document.addEventListener('mousemove', onMouseMove);
-
-            document.addEventListener('mouseup', () => {
-                isDragging = false;
-                document.removeEventListener('mousemove', onMouseMove);
-                animateBounce(circle, velocityX, velocityY);
-            });
-        });
-
-        // Para dispositivos táctiles
-        circle.addEventListener('touchstart', (e) => {
-            isDragging = true;
-            lastX = e.touches[0].clientX;
-            lastY = e.touches[0].clientY;
-
-            const onTouchMove = (e) => {
-                if (isDragging) {
-                    const deltaX = e.touches[0].clientX - lastX;
-                    const deltaY = e.touches[0].clientY - lastY;
-                    circle.style.left = (circle.offsetLeft + deltaX) + 'px';
-                    circle.style.top = (circle.offsetTop + deltaY) + 'px';
-                    velocityX = deltaX;
-                    velocityY = deltaY;
-                    lastX = e.touches[0].clientX;
-                    lastY = e.touches[0].clientY;
-                }
-            };
-
-            document.addEventListener('touchmove', onTouchMove);
-
-            document.addEventListener('touchend', () => {
-                isDragging = false;
-                document.removeEventListener('touchmove', onTouchMove);
-                animateBounce(circle, velocityX, velocityY);
-            });
-        });
-
-        function animateBounce(element, vx, vy) {
-            const damping = 0.95;
-            const gravity = 0.5;
-
-            function bounce() {
-                let left = element.offsetLeft + vx;
-                let top = element.offsetTop + vy;
-
-                if (left <= 0 || left + element.clientWidth >= window.innerWidth) {
-                    vx = -vx * damping;
-                    left = left <= 0 ? 0 : window.innerWidth - element.clientWidth;
-                }
-                if (top <= 0 || top + element.clientHeight >= window.innerHeight) {
-                    vy = -vy * damping;
-                    top = top <= 0 ? 0 : window.innerHeight - element.clientHeight;
-                } else {
-                    vy += gravity;
-                }
-
-                element.style.left = left + 'px';
-                element.style.top = top + 'px';
-
-                if (Math.abs(vx) > 0.5 || Math.abs(vy) > 0.5) {
-                    moveInterval = requestAnimationFrame(bounce);
-                } else {
-                    cancelAnimationFrame(moveInterval);
-                }
+        async function initCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+                video.srcObject = stream;
+            } catch (err) {
+                errorDisplay.textContent = "Error al acceder a la cámara: " + err.message;
             }
-            moveInterval = requestAnimationFrame(bounce);
         }
-    });
-</script>
 
+        initCamera();
+    </script>
 </body>
 </html>

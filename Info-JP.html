@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Escáner de Códigos QR</title>
-    <!-- Biblioteca HTML5 QR Code -->
     <script src="https://cdn.jsdelivr.net/npm/html5-qrcode/minified/html5-qrcode.min.js"></script>
-    <!-- Estilos CSS -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -37,12 +35,13 @@
         }
         #reader {
             width: 100%;
-            max-width: 300px;
-            height: 300px;
+            max-width: 320px;
+            aspect-ratio: 1 / 1; /* Mantiene un cuadro perfecto */
             border: 2px solid #333;
             border-radius: 10px;
             background-color: #fff;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
         .data-container {
             flex: 1;
@@ -79,7 +78,7 @@
         .remove-btn:hover {
             background-color: #ff1a1a;
         }
-        .export-btn {
+        .export-btn, .add-btn {
             margin-top: 20px;
             background-color: #4CAF50;
             color: white;
@@ -89,8 +88,14 @@
             border-radius: 5px;
             cursor: pointer;
         }
-        .export-btn:hover {
+        .export-btn:hover, .add-btn:hover {
             background-color: #45a049;
+        }
+        .scanned-data {
+            font-weight: bold;
+            margin: 20px 0;
+            font-size: 18px;
+            color: #333;
         }
     </style>
 </head>
@@ -103,6 +108,8 @@
         <!-- Información escaneada -->
         <div class="data-container">
             <h2>Datos Escaneados</h2>
+            <div class="scanned-data" id="scannedData">Escanee un código QR...</div>
+            <button class="add-btn" onclick="addRow()" id="addBtn" disabled>Agregar</button>
             <table id="data-table">
                 <thead>
                     <tr>
@@ -118,31 +125,40 @@
         </div>
     </div>
 
-    <!-- Scripts JavaScript -->
     <script>
         const html5QrCode = new Html5Qrcode("reader");
+        const scannedDataElement = document.getElementById("scannedData");
+        const addButton = document.getElementById("addBtn");
         const tableBody = document.querySelector("#data-table tbody");
+        let lastScannedData = "";
 
-        // Inicializar el escáner
+        // Configurar y optimizar el escáner QR
         html5QrCode.start(
-            { facingMode: "environment" }, // "user" para cámara frontal
-            { fps: 10, qrbox: 250 },
+            { facingMode: "environment" },
+            { fps: 15, qrbox: { width: 250, height: 250 } }, // FPS más alto y mejor caja de escaneo
             (decodedText) => {
-                addRow(decodedText); // Agregar información escaneada
+                // Mostrar el dato escaneado
+                if (decodedText !== lastScannedData) {
+                    lastScannedData = decodedText;
+                    scannedDataElement.textContent = `Código QR: ${decodedText}`;
+                    addButton.disabled = false; // Habilitar el botón "Agregar"
+                }
             },
             (errorMessage) => {
-                console.warn(errorMessage);
+                console.warn("Escaneo fallido:", errorMessage);
             }
         ).catch((err) => {
             console.error("No se pudo iniciar la cámara:", err);
         });
 
-        // Agregar una fila con el dato escaneado
-        function addRow(data) {
+        // Agregar dato a la tabla
+        function addRow() {
+            if (!lastScannedData) return;
+
             const row = document.createElement("tr");
 
             const dataCell = document.createElement("td");
-            dataCell.textContent = data;
+            dataCell.textContent = lastScannedData;
 
             const actionCell = document.createElement("td");
             const removeButton = document.createElement("button");
@@ -154,6 +170,11 @@
             row.appendChild(dataCell);
             row.appendChild(actionCell);
             tableBody.appendChild(row);
+
+            // Resetear los datos
+            lastScannedData = "";
+            scannedDataElement.textContent = "Escanee un código QR...";
+            addButton.disabled = true;
         }
 
         // Exportar datos a Excel

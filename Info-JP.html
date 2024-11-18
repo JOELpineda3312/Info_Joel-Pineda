@@ -132,24 +132,29 @@
         const tableBody = document.querySelector("#data-table tbody");
         let lastScannedData = "";
 
-        // Configurar y optimizar el escáner QR
-        html5QrCode.start(
-            { facingMode: "environment" },
-            { fps: 15, qrbox: { width: 250, height: 250 } }, // FPS más alto y mejor caja de escaneo
-            (decodedText) => {
-                // Mostrar el dato escaneado
-                if (decodedText !== lastScannedData) {
-                    lastScannedData = decodedText;
-                    scannedDataElement.textContent = `Código QR: ${decodedText}`;
-                    addButton.disabled = false; // Habilitar el botón "Agregar"
-                }
-            },
-            (errorMessage) => {
-                console.warn("Escaneo fallido:", errorMessage);
-            }
-        ).catch((err) => {
-            console.error("No se pudo iniciar la cámara:", err);
-        });
+// Configurar y optimizar el escáner QR
+html5QrCode.start(
+    { facingMode: "environment" }, // Usar la cámara trasera
+    {
+        fps: 30, // Aumentamos los FPS para mayor rapidez
+        qrbox: { width: 200, height: 200 }, // Reducimos el área de escaneo
+        disableFlip: true // Evitamos que invierta la imagen para mejorar rendimiento
+    },
+    (decodedText) => {
+        // Mostrar el dato escaneado
+        if (decodedText !== lastScannedData) {
+            lastScannedData = decodedText;
+            scannedDataElement.textContent = `Código QR: ${decodedText}`;
+            addButton.disabled = false; // Habilitar el botón "Agregar"
+        }
+    },
+    (errorMessage) => {
+        console.warn("Escaneo fallido:", errorMessage);
+    }
+).catch((err) => {
+    console.error("No se pudo iniciar la cámara:", err);
+});
+
 
         // Agregar dato a la tabla
         function addRow() {

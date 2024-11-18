@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Escáner de Códigos QR</title>
     <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode/minified/html5-qrcode.min.js"></script>
+
+
         <style>
         body {
             font-family: Arial, sans-serif;
@@ -44,6 +48,7 @@
 
     <script>
         const html5QrCode = new Html5Qrcode("reader");
+        console.log(typeof Html5Qrcode); // Debe mostrar "function"
         const resultTextarea = document.getElementById("result");
 
         // Iniciar la cámara

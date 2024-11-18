@@ -1,47 +1,105 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prueba de Cámara</title>
+    <title>Escáner de Códigos QR</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 0;
+            background-color: #f8f9fa;
+            padding: 20px;
         }
-        video {
-            width: 100%;
-            max-width: 400px;
-            margin: 20px auto;
-            border: 2px solid #333;
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
+        .qr-reader {
+            margin-bottom: 20px;
+        }
+        .qr-data {
             margin-top: 20px;
+        }
+        .btn-export {
+            margin-top: 20px;
+        }
+        #reader {
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            position: relative;
         }
     </style>
 </head>
 <body>
-    <h1>Prueba de Cámara</h1>
-    <video id="video" autoplay></video>
-    <div id="error" style="color: red; margin-top: 10px;"></div>
-    <script>
-        const video = document.getElementById("video");
-        const errorDisplay = document.getElementById("error");
+    <div class="container">
+        <h1 class="text-center">Escáner de Códigos QR</h1>
+        <div class="qr-reader" id="reader" style="width: 100%;"></div>
+        <div class="form-group">
+            <label for="cameraSize">Tamaño de la Cámara:</label>
+            <select id="cameraSize" class="form-control">
+                <option value="250">Pequeño</option>
+                <option value="500" selected>Mediano</option>
+                <option value="750">Grande</option>
+            </select>
+        </div>
+        <div class="qr-data">
+            <h3>Datos Escaneados:</h3>
+            <ul id="qrDataList" class="list-group"></ul>
+        </div>
+        <button class="btn btn-primary btn-export" onclick="exportToExcel()">Exportar a Excel</button>
+    </div>
 
-        async function initCamera() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-                video.srcObject = stream;
-            } catch (err) {
-                errorDisplay.textContent = "Error al acceder a la cámara: " + err.message;
+    <script>
+        let qrData = [];
+
+        function onScanSuccess(decodedText) {
+            if (!qrData.includes(decodedText)) {
+                qrData.push(decodedText);
+                const qrDataList = document.getElementById('qrDataList');
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item';
+                listItem.textContent = decodedText;
+                qrDataList.appendChild(listItem);
             }
         }
 
-        initCamera();
+        function startQrScanner(size) {
+            const reader = document.getElementById('reader');
+            reader.innerHTML = '';
+            const html5QrCode = new Html5Qrcode("reader");
+            html5QrCode.start(
+                { facingMode: "environment" }, // Usar cámara trasera
+                {
+                    fps: 10,    // Frames por segundo
+                    qrbox: size // Tamaño del área de escaneo
+                },
+                onScanSuccess)
+                .catch(err => {
+                    console.error(`Error al iniciar el escáner: ${err}`);
+                });
+        }
+
+        function exportToExcel() {
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet([["Código QR"], ...qrData.map(qr => [qr])]);
+            XLSX.utils.book_append_sheet(wb, ws, "QR Data");
+            XLSX.writeFile(wb, "qr_data.xlsx");
+        }
+
+        document.getElementById('cameraSize').addEventListener('change', function() {
+            const size = parseInt(this.value);
+            startQrScanner(size);
+        });
+
+        // Iniciar el escáner con tamaño mediano por defecto
+        startQrScanner(500);
     </script>
 </body>
 </html>

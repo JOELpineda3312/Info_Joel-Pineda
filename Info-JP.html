@@ -4,75 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Escáner de Códigos QR</title>
-    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
-    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+    <!-- Biblioteca desde jsdelivr -->
     <script src="https://cdn.jsdelivr.net/npm/html5-qrcode/minified/html5-qrcode.min.js"></script>
-
-
-        <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-            padding: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .qr-reader {
-            margin-bottom: 20px;
-        }
-        .qr-data {
-            margin-top: 20px;
-        }
-        .btn-export {
-            margin-top: 20px;
-        }
-        #reader {
-            border: 2px solid #007bff;
-            border-radius: 8px;
-            position: relative;
-        }
-    </style>
 </head>
 <body>
     <h1>Escáner de Códigos QR</h1>
     <div id="reader" style="width: 300px; height: 300px;"></div>
-    <p>Datos Escaneados:</p>
-    <textarea id="result" rows="10" cols="50"></textarea>
-    <button onclick="exportToExcel()">Exportar a Excel</button>
+    <p id="output">Esperando escaneo...</p>
 
     <script>
-        const html5QrCode = new Html5Qrcode("reader");
         console.log(typeof Html5Qrcode); // Debe mostrar "function"
-        const resultTextarea = document.getElementById("result");
 
-        // Iniciar la cámara
+        const html5QrCode = new Html5Qrcode("reader");
+        const output = document.getElementById("output");
+
         html5QrCode.start(
-            { facingMode: "environment" }, // Usar "user" para cámara frontal
+            { facingMode: "environment" }, // "user" para cámara frontal
             { fps: 10, qrbox: 250 },
             (decodedText) => {
-                resultTextarea.value += decodedText + "\n"; // Agregar el texto escaneado
+                output.innerText = "Código detectado: " + decodedText;
             },
             (errorMessage) => {
-                console.error(errorMessage); // Mostrar errores
+                console.warn(errorMessage);
             }
         ).catch((err) => {
-            console.error("Error al iniciar la cámara:", err);
+            console.error("No se pudo iniciar la cámara:", err);
         });
-
-        // Función para exportar a Excel
-        function exportToExcel() {
-            const data = resultTextarea.value.split("\n").filter(Boolean); // Obtener datos
-            const workbook = XLSX.utils.book_new();
-            const worksheet = XLSX.utils.aoa_to_sheet(data.map((text) => [text]));
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Datos QR");
-            XLSX.writeFile(workbook, "datos_qr.xlsx");
-        }
     </script>
 </body>
 </html>

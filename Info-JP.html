@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Escáner de Códigos QR</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
     <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
-    <style>
+        <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f8f9fa;
@@ -38,68 +36,38 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="text-center">Escáner de Códigos QR</h1>
-        <div class="qr-reader" id="reader" style="width: 100%;"></div>
-        <div class="form-group">
-            <label for="cameraSize">Tamaño de la Cámara:</label>
-            <select id="cameraSize" class="form-control">
-                <option value="250">Pequeño</option>
-                <option value="500" selected>Mediano</option>
-                <option value="750">Grande</option>
-            </select>
-        </div>
-        <div class="qr-data">
-            <h3>Datos Escaneados:</h3>
-            <ul id="qrDataList" class="list-group"></ul>
-        </div>
-        <button class="btn btn-primary btn-export" onclick="exportToExcel()">Exportar a Excel</button>
-    </div>
+    <h1>Escáner de Códigos QR</h1>
+    <div id="reader" style="width: 300px; height: 300px;"></div>
+    <p>Datos Escaneados:</p>
+    <textarea id="result" rows="10" cols="50"></textarea>
+    <button onclick="exportToExcel()">Exportar a Excel</button>
 
     <script>
-        let qrData = [];
+        const html5QrCode = new Html5Qrcode("reader");
+        const resultTextarea = document.getElementById("result");
 
-        function onScanSuccess(decodedText) {
-            if (!qrData.includes(decodedText)) {
-                qrData.push(decodedText);
-                const qrDataList = document.getElementById('qrDataList');
-                const listItem = document.createElement('li');
-                listItem.className = 'list-group-item';
-                listItem.textContent = decodedText;
-                qrDataList.appendChild(listItem);
+        // Iniciar la cámara
+        html5QrCode.start(
+            { facingMode: "environment" }, // Usar "user" para cámara frontal
+            { fps: 10, qrbox: 250 },
+            (decodedText) => {
+                resultTextarea.value += decodedText + "\n"; // Agregar el texto escaneado
+            },
+            (errorMessage) => {
+                console.error(errorMessage); // Mostrar errores
             }
-        }
-
-        function startQrScanner(size) {
-            const reader = document.getElementById('reader');
-            reader.innerHTML = '';
-            const html5QrCode = new Html5Qrcode("reader");
-            html5QrCode.start(
-                { facingMode: "environment" }, // Usar cámara trasera
-                {
-                    fps: 10,    // Frames por segundo
-                    qrbox: size // Tamaño del área de escaneo
-                },
-                onScanSuccess)
-                .catch(err => {
-                    console.error(`Error al iniciar el escáner: ${err}`);
-                });
-        }
-
-        function exportToExcel() {
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.aoa_to_sheet([["Código QR"], ...qrData.map(qr => [qr])]);
-            XLSX.utils.book_append_sheet(wb, ws, "QR Data");
-            XLSX.writeFile(wb, "qr_data.xlsx");
-        }
-
-        document.getElementById('cameraSize').addEventListener('change', function() {
-            const size = parseInt(this.value);
-            startQrScanner(size);
+        ).catch((err) => {
+            console.error("Error al iniciar la cámara:", err);
         });
 
-        // Iniciar el escáner con tamaño mediano por defecto
-        startQrScanner(500);
+        // Función para exportar a Excel
+        function exportToExcel() {
+            const data = resultTextarea.value.split("\n").filter(Boolean); // Obtener datos
+            const workbook = XLSX.utils.book_new();
+            const worksheet = XLSX.utils.aoa_to_sheet(data.map((text) => [text]));
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Datos QR");
+            XLSX.writeFile(workbook, "datos_qr.xlsx");
+        }
     </script>
 </body>
 </html>

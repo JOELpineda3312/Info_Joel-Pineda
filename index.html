@@ -35,8 +35,8 @@
         }
         #reader {
             width: 100%;
-            max-width: 320px;
-            aspect-ratio: 1 / 1; /* Mantiene un cuadro perfecto */
+            max-width: 640px; /* Resolución más alta */
+            height: 480px; /* Relación 4:3 */
             border: 2px solid #333;
             border-radius: 10px;
             background-color: #fff;
@@ -102,10 +102,7 @@
 <body>
     <h1>Escáner de Códigos QR</h1>
     <div class="container">
-        <!-- Escáner de QR -->
         <div id="reader"></div>
-
-        <!-- Información escaneada -->
         <div class="data-container">
             <h2>Datos Escaneados</h2>
             <div class="scanned-data" id="scannedData">Escanee un código QR...</div>
@@ -117,9 +114,7 @@
                         <th>Acción</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <!-- Datos dinámicos -->
-                </tbody>
+                <tbody></tbody>
             </table>
             <button class="export-btn" onclick="exportToExcel()">Exportar a Excel</button>
         </div>
@@ -131,37 +126,36 @@
         const addButton = document.getElementById("addBtn");
         const tableBody = document.querySelector("#data-table tbody");
         let lastScannedData = "";
+        let scanCount = 0; // Contador de códigos QR escaneados
 
-// Configurar y optimizar el escáner QR
-html5QrCode.start(
-    { facingMode: "environment" }, // Usar la cámara trasera
-    {
-        fps: 30, // Aumentamos los FPS para mayor rapidez
-        qrbox: { width: 200, height: 200 }, // Reducimos el área de escaneo
-        disableFlip: true // Evitamos que invierta la imagen para mejorar rendimiento
-    },
-    (decodedText) => {
-        // Mostrar el dato escaneado
-        if (decodedText !== lastScannedData) {
-            lastScannedData = decodedText;
-            scannedDataElement.textContent = `Código QR: ${decodedText}`;
-            addButton.disabled = false; // Habilitar el botón "Agregar"
-        }
-    },
-    (errorMessage) => {
-        console.warn("Escaneo fallido:", errorMessage);
-    }
-).catch((err) => {
-    console.error("No se pudo iniciar la cámara:", err);
-});
+        // Iniciar el escáner QR con máxima resolución
+        html5QrCode.start(
+            { facingMode: "environment" },
+            {
+                fps: 60, // Velocidad alta
+                qrbox: 320, // Escaneo grande en relación con la cámara
+                aspectRatio: 4 / 3, // Proporción completa de cámara
+                disableFlip: true // No invertir la imagen
+            },
+            (decodedText) => {
+                if (decodedText !== lastScannedData) {
+                    lastScannedData = decodedText;
+                    scannedDataElement.textContent = `Código QR: ${decodedText}`;
+                    addButton.disabled = false;
+                }
+            },
+            (errorMessage) => {
+                console.warn("Error de escaneo:", errorMessage);
+            }
+        ).catch((err) => {
+            console.error("Error al iniciar la cámara:", err);
+        });
 
-
-        // Agregar dato a la tabla
+        // Agregar datos a la tabla
         function addRow() {
             if (!lastScannedData) return;
 
             const row = document.createElement("tr");
-
             const dataCell = document.createElement("td");
             dataCell.textContent = lastScannedData;
 
@@ -176,9 +170,11 @@ html5QrCode.start(
             row.appendChild(actionCell);
             tableBody.appendChild(row);
 
-            // Resetear los datos
+            // Incrementar el contador de escaneos
+            scanCount++;
+            document.querySelector(".scanned-data").textContent = `QR escaneados: ${scanCount}`;
+
             lastScannedData = "";
-            scannedDataElement.textContent = "Escanee un código QR...";
             addButton.disabled = true;
         }
 
@@ -198,4 +194,5 @@ html5QrCode.start(
     </script>
 </body>
 </html>
+
 

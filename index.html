@@ -14,14 +14,14 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             min-height: 100vh;
             background-color: #f4f4f9;
             color: #333;
         }
         h1 {
+            margin: 20px 0;
             color: #333;
-            margin-bottom: 20px;
         }
         .container {
             display: flex;
@@ -32,7 +32,6 @@
             max-width: 1200px;
             width: 100%;
             padding: 20px;
-            box-sizing: border-box;
         }
         #reader {
             width: 100%;
@@ -44,15 +43,33 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .flash-btn {
+            margin: 10px 0;
+            background-color: #ff4d4d; /* Rojo para apagado */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .flash-btn.on {
+            background-color: #4CAF50; /* Verde para encendido */
+        }
         .data-container {
-            flex: 1;
-            max-width: 400px;
+            width: 100%;
+            max-width: 640px;
             background-color: #fff;
             border: 1px solid #ddd;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 20px;
-            box-sizing: border-box;
         }
         .data-container table {
             width: 100%;
@@ -98,26 +115,15 @@
             font-size: 18px;
             color: #333;
         }
-        .flash-btn {
-            margin: 10px 0;
-            background-color: #ff4d4d; /* Rojo para apagado */
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .flash-btn.on {
-            background-color: #4CAF50; /* Verde para encendido */
-        }
     </style>
 </head>
 <body>
     <h1>Escáner de Códigos QR</h1>
     <div class="container">
         <div id="reader"></div>
-        <button class="flash-btn" id="flashToggleBtn">Activar Flash</button>
+        <div class="controls">
+            <button class="flash-btn" id="flashToggleBtn">Activar Flash</button>
+        </div>
         <div class="data-container">
             <h2>Datos Escaneados</h2>
             <div class="scanned-data" id="scannedData">Escanee un código QR...</div>
@@ -137,22 +143,20 @@
 
     <script>
         const html5QrCode = new Html5Qrcode("reader");
+        const flashToggleBtn = document.getElementById("flashToggleBtn");
         const scannedDataElement = document.getElementById("scannedData");
         const addButton = document.getElementById("addBtn");
-        const flashToggleBtn = document.getElementById("flashToggleBtn");
         const tableBody = document.querySelector("#data-table tbody");
         let lastScannedData = "";
         let isFlashOn = false;
-        let track = null;
+        let videoTrack = null;
 
-        // Iniciar el escáner QR con configuración avanzada
+        // Iniciar el escáner QR
         html5QrCode.start(
             { facingMode: "environment" },
             {
-                fps: 60,
-                qrbox: 320,
-                aspectRatio: 4 / 3,
-                disableFlip: true
+                fps: 10,
+                qrbox: 250
             },
             (decodedText) => {
                 if (decodedText !== lastScannedData) {
@@ -164,21 +168,21 @@
             (errorMessage) => {
                 console.warn("Error de escaneo:", errorMessage);
             }
-        ).then(() => {
-            track = html5QrCode.getRunningTrack();
+        ).then((stream) => {
+            videoTrack = stream.getTracks().find((track) => track.kind === "video");
         }).catch((err) => {
             console.error("Error al iniciar la cámara:", err);
         });
 
         // Activar/Desactivar flash
         flashToggleBtn.addEventListener("click", () => {
-            if (track) {
-                const capabilities = track.getCapabilities();
+            if (videoTrack) {
+                const capabilities = videoTrack.getCapabilities();
                 if (capabilities.torch) {
-                    track.applyConstraints({
-                        advanced: [{ torch: !isFlashOn }]
+                    isFlashOn = !isFlashOn;
+                    videoTrack.applyConstraints({
+                        advanced: [{ torch: isFlashOn }]
                     }).then(() => {
-                        isFlashOn = !isFlashOn;
                         flashToggleBtn.textContent = isFlashOn ? "Desactivar Flash" : "Activar Flash";
                         flashToggleBtn.classList.toggle("on", isFlashOn);
                     }).catch((err) => {
@@ -229,4 +233,3 @@
     </script>
 </body>
 </html>
-

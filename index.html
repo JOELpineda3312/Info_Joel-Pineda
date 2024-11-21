@@ -6,6 +6,7 @@
     <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR967un5DdXhLKKZqb52wF7MY7RbknnyYQjuw&s" type="image/x-icon">
     <title>Escáner de Códigos QR</title>
     <script src="https://cdn.jsdelivr.net/npm/html5-qrcode/minified/html5-qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -36,8 +37,8 @@
         }
         #reader {
             width: 100%;
-            max-width: 640px; /* Resolución más alta */
-            height: 480px; /* Relación 4:3 */
+            max-width: 640px;
+            height: 480px;
             border: 2px solid #333;
             border-radius: 10px;
             background-color: #fff;
@@ -46,7 +47,7 @@
         }
         .data-container {
             flex: 1;
-            max-width: 400px;
+            max-width: 4000px;
             background-color: #fff;
             border: 1px solid #ddd;
             border-radius: 10px;
@@ -79,7 +80,7 @@
         .remove-btn:hover {
             background-color: #ff1a1a;
         }
-        .export-btn, .add-btn {
+        .export-btn, .add-btn, .color-btn {
             margin-top: 20px;
             background-color: #4CAF50;
             color: white;
@@ -89,7 +90,7 @@
             border-radius: 5px;
             cursor: pointer;
         }
-        .export-btn:hover, .add-btn:hover {
+        .export-btn:hover, .add-btn:hover, .color-btn:hover {
             background-color: #45a049;
         }
         .scanned-data {
@@ -118,6 +119,7 @@
                 <tbody></tbody>
             </table>
             <button class="export-btn" onclick="exportToExcel()">Exportar a Excel</button>
+            <button class="color-btn" onclick="changeColor()">Cambiar Color Pagina</button>
         </div>
     </div>
 
@@ -127,16 +129,29 @@
         const addButton = document.getElementById("addBtn");
         const tableBody = document.querySelector("#data-table tbody");
         let lastScannedData = "";
-        let scanCount = 0; // Contador de códigos QR escaneados
+        let scanCount = 0;
 
-        // Iniciar el escáner QR con máxima resolución
+        const colors = [
+            { name: "Rojo", value: "#ff0000" },
+            { name: "Verde", value: "#4CAF50" },
+            { name: "Azul", value: "#1E90FF" },
+            { name: "Naranja", value: "#FFA500" },
+            { name: "Verde Claro", value: "#9cf83b" },
+            { name: "Naranja", value: "#FFA500" },
+            { name: "Marino", value: "#00fff3" },
+            { name: "RosaB", value: "#ff00f3" },
+            { name: "Gris", value: "#9b979a" },
+            { name: "Negro", value: "#000000" },
+            { name: "Amarillo", value: "#FFD700" }
+        ];
+
         html5QrCode.start(
             { facingMode: "environment" },
             {
-                fps: 60, // Velocidad alta
-                qrbox: 320, // Escaneo grande en relación con la cámara
-                aspectRatio: 4 / 3, // Proporción completa de cámara
-                disableFlip: true // No invertir la imagen
+                fps: 60,
+                qrbox: 320,
+                aspectRatio: 4 / 3,
+                disableFlip: true
             },
             (decodedText) => {
                 if (decodedText !== lastScannedData) {
@@ -152,7 +167,6 @@
             console.error("Error al iniciar la cámara:", err);
         });
 
-        // Agregar datos a la tabla
         function addRow() {
             if (!lastScannedData) return;
 
@@ -171,29 +185,27 @@
             row.appendChild(actionCell);
             tableBody.appendChild(row);
 
-            // Incrementar el contador de escaneos
             scanCount++;
             document.querySelector(".scanned-data").textContent = `QR escaneados: ${scanCount}`;
-
             lastScannedData = "";
             addButton.disabled = true;
         }
 
-        // Exportar datos a Excel
         function exportToExcel() {
             const rows = Array.from(tableBody.querySelectorAll("tr"));
-            const data = rows.map(row => row.querySelector("td").textContent);
-            const csvContent = "data:text/csv;charset=utf-8," + data.join("\n");
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "datos_qr.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            const data = rows.map(row => [row.querySelector("td").textContent]);
+            const worksheet = XLSX.utils.aoa_to_sheet([["Dato QR"]].concat(data));
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Datos QR");
+            XLSX.writeFile(workbook, "datos_qr.xlsx");
+        }
+
+        function changeColor() {
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            document.body.style.backgroundColor = randomColor.value;
+            alert(`Color cambiado a ${randomColor.name}`);
         }
     </script>
 </body>
 </html>
-
 

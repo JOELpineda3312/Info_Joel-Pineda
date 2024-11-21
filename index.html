@@ -36,8 +36,8 @@
         }
         #reader {
             width: 100%;
-            max-width: 640px; /* Resolución más alta */
-            height: 480px; /* Relación 4:3 */
+            max-width: 640px;
+            height: 480px;
             border: 2px solid #333;
             border-radius: 10px;
             background-color: #fff;
@@ -54,34 +54,9 @@
             padding: 20px;
             box-sizing: border-box;
         }
-        .data-container table {
-            width: 100%;
-            border-collapse: collapse;
+        .flash-btn {
             margin-top: 10px;
-        }
-        .data-container th, .data-container td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        .data-container th {
-            background-color: #333;
-            color: #fff;
-        }
-        .remove-btn {
-            background-color: #ff4d4d;
-            color: #fff;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .remove-btn:hover {
-            background-color: #ff1a1a;
-        }
-        .export-btn, .add-btn {
-            margin-top: 20px;
-            background-color: #4CAF50;
+            background-color: #007BFF;
             color: white;
             border: none;
             padding: 10px 20px;
@@ -89,14 +64,8 @@
             border-radius: 5px;
             cursor: pointer;
         }
-        .export-btn:hover, .add-btn:hover {
-            background-color: #45a049;
-        }
-        .scanned-data {
-            font-weight: bold;
-            margin: 20px 0;
-            font-size: 18px;
-            color: #333;
+        .flash-btn:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
@@ -104,6 +73,7 @@
     <h1>Escáner de Códigos QR</h1>
     <div class="container">
         <div id="reader"></div>
+        <button class="flash-btn" id="flashToggleBtn">Activar Flash</button>
         <div class="data-container">
             <h2>Datos Escaneados</h2>
             <div class="scanned-data" id="scannedData">Escanee un código QR...</div>
@@ -125,18 +95,19 @@
         const html5QrCode = new Html5Qrcode("reader");
         const scannedDataElement = document.getElementById("scannedData");
         const addButton = document.getElementById("addBtn");
+        const flashToggleBtn = document.getElementById("flashToggleBtn");
         const tableBody = document.querySelector("#data-table tbody");
         let lastScannedData = "";
-        let scanCount = 0; // Contador de códigos QR escaneados
+        let isFlashOn = false;
 
-        // Iniciar el escáner QR con máxima resolución
+        // Iniciar el escáner QR
         html5QrCode.start(
             { facingMode: "environment" },
             {
-                fps: 60, // Velocidad alta
-                qrbox: 320, // Escaneo grande en relación con la cámara
-                aspectRatio: 4 / 3, // Proporción completa de cámara
-                disableFlip: true // No invertir la imagen
+                fps: 60,
+                qrbox: 320,
+                aspectRatio: 4 / 3,
+                disableFlip: true
             },
             (decodedText) => {
                 if (decodedText !== lastScannedData) {
@@ -150,6 +121,16 @@
             }
         ).catch((err) => {
             console.error("Error al iniciar la cámara:", err);
+        });
+
+        // Activar/Desactivar flash
+        flashToggleBtn.addEventListener("click", () => {
+            html5QrCode.setTorchState(!isFlashOn).then(() => {
+                isFlashOn = !isFlashOn;
+                flashToggleBtn.textContent = isFlashOn ? "Desactivar Flash" : "Activar Flash";
+            }).catch((err) => {
+                console.error("El flash no es compatible o no se pudo activar:", err);
+            });
         });
 
         // Agregar datos a la tabla
@@ -170,10 +151,6 @@
             row.appendChild(dataCell);
             row.appendChild(actionCell);
             tableBody.appendChild(row);
-
-            // Incrementar el contador de escaneos
-            scanCount++;
-            document.querySelector(".scanned-data").textContent = `QR escaneados: ${scanCount}`;
 
             lastScannedData = "";
             addButton.disabled = true;

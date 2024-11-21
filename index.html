@@ -25,13 +25,13 @@
         }
         .container {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: flex-start;
-            gap: 20px;
-            max-width: 1200px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
             width: 100%;
+            max-width: 800px;
             padding: 20px;
+            gap: 20px;
         }
         #reader {
             width: 100%;
@@ -47,10 +47,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin-top: 20px;
+            gap: 10px;
         }
         .flash-btn {
-            margin: 10px 0;
             background-color: #ff4d4d; /* Rojo para apagado */
             color: white;
             border: none;
@@ -64,12 +63,11 @@
         }
         .data-container {
             width: 100%;
-            max-width: 640px;
             background-color: #fff;
             border: 1px solid #ddd;
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .data-container table {
             width: 100%;
@@ -96,7 +94,7 @@
         .remove-btn:hover {
             background-color: #ff1a1a;
         }
-        .export-btn, .add-btn {
+        .export-btn {
             margin-top: 20px;
             background-color: #4CAF50;
             color: white;
@@ -106,14 +104,8 @@
             border-radius: 5px;
             cursor: pointer;
         }
-        .export-btn:hover, .add-btn:hover {
+        .export-btn:hover {
             background-color: #45a049;
-        }
-        .scanned-data {
-            font-weight: bold;
-            margin: 20px 0;
-            font-size: 18px;
-            color: #333;
         }
     </style>
 </head>
@@ -126,18 +118,7 @@
         </div>
         <div class="data-container">
             <h2>Datos Escaneados</h2>
-            <div class="scanned-data" id="scannedData">Escanee un código QR...</div>
-            <button class="add-btn" onclick="addRow()" id="addBtn" disabled>Agregar</button>
-            <table id="data-table">
-                <thead>
-                    <tr>
-                        <th>Dato QR</th>
-                        <th>Acción</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-            <button class="export-btn" onclick="exportToExcel()">Exportar a Excel</button>
+            <div id="scannedData">Escanee un código QR...</div>
         </div>
     </div>
 
@@ -145,91 +126,49 @@
         const html5QrCode = new Html5Qrcode("reader");
         const flashToggleBtn = document.getElementById("flashToggleBtn");
         const scannedDataElement = document.getElementById("scannedData");
-        const addButton = document.getElementById("addBtn");
-        const tableBody = document.querySelector("#data-table tbody");
-        let lastScannedData = "";
-        let isFlashOn = false;
         let videoTrack = null;
+        let isFlashOn = false;
 
         // Iniciar el escáner QR
-        html5QrCode.start(
-            { facingMode: "environment" },
-            {
-                fps: 10,
-                qrbox: 250
-            },
-            (decodedText) => {
-                if (decodedText !== lastScannedData) {
-                    lastScannedData = decodedText;
-                    scannedDataElement.textContent = `Código QR: ${decodedText}`;
-                    addButton.disabled = false;
-                }
-            },
-            (errorMessage) => {
-                console.warn("Error de escaneo:", errorMessage);
-            }
-        ).then((stream) => {
-            videoTrack = stream.getTracks().find((track) => track.kind === "video");
-        }).catch((err) => {
-            console.error("Error al iniciar la cámara:", err);
-        });
+        async function startScanner() {
+            try {
+                await html5QrCode.start(
+                    { facingMode: "environment" },
+                    { fps: 10, qrbox: { width: 250, height: 250 } },
+                    (decodedText) => {
+                        scannedDataElement.textContent = `Código QR: ${decodedText}`;
+                    },
+                    (errorMessage) => {
+                        console.warn("Error de escaneo:", errorMessage);
+                    }
+                );
 
-        // Activar/Desactivar flash
+                // Obtener el MediaStream de la cámara
+                const stream = await html5QrCode.getVideoStream();
+                if (stream) {
+                    videoTrack = stream.getVideoTracks()[0];
+                }
+            } catch (err) {
+                console.error("Error al iniciar la cámara:", err);
+            }
+        }
+
+        // Controlar el flash
         flashToggleBtn.addEventListener("click", () => {
             if (videoTrack) {
                 const capabilities = videoTrack.getCapabilities();
                 if (capabilities.torch) {
                     isFlashOn = !isFlashOn;
-                    videoTrack.applyConstraints({
-                        advanced: [{ torch: isFlashOn }]
-                    }).then(() => {
-                        flashToggleBtn.textContent = isFlashOn ? "Desactivar Flash" : "Activar Flash";
-                        flashToggleBtn.classList.toggle("on", isFlashOn);
-                    }).catch((err) => {
-                        console.error("No se pudo controlar el flash:", err);
-                    });
+                    videoTrack.applyConstraints({ advanced: [{ torch: isFlashOn }] });
+                    flashToggleBtn.textContent = isFlashOn ? "Desactivar Flash" : "Activar Flash";
+                    flashToggleBtn.classList.toggle("on", isFlashOn);
                 } else {
                     alert("El dispositivo no soporta el control del flash.");
                 }
             }
         });
 
-        // Agregar datos a la tabla
-        function addRow() {
-            if (!lastScannedData) return;
-
-            const row = document.createElement("tr");
-            const dataCell = document.createElement("td");
-            dataCell.textContent = lastScannedData;
-
-            const actionCell = document.createElement("td");
-            const removeButton = document.createElement("button");
-            removeButton.textContent = "X";
-            removeButton.className = "remove-btn";
-            removeButton.onclick = () => row.remove();
-            actionCell.appendChild(removeButton);
-
-            row.appendChild(dataCell);
-            row.appendChild(actionCell);
-            tableBody.appendChild(row);
-
-            lastScannedData = "";
-            addButton.disabled = true;
-        }
-
-        // Exportar datos a Excel
-        function exportToExcel() {
-            const rows = Array.from(tableBody.querySelectorAll("tr"));
-            const data = rows.map(row => row.querySelector("td").textContent);
-            const csvContent = "data:text/csv;charset=utf-8," + data.join("\n");
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "datos_qr.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
+        startScanner();
     </script>
 </body>
 </html>

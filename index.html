@@ -54,9 +54,34 @@
             padding: 20px;
             box-sizing: border-box;
         }
-        .flash-btn {
+        .data-container table {
+            width: 100%;
+            border-collapse: collapse;
             margin-top: 10px;
-            background-color: #007BFF;
+        }
+        .data-container th, .data-container td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .data-container th {
+            background-color: #333;
+            color: #fff;
+        }
+        .remove-btn {
+            background-color: #ff4d4d;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .remove-btn:hover {
+            background-color: #ff1a1a;
+        }
+        .export-btn, .add-btn {
+            margin-top: 20px;
+            background-color: #4CAF50;
             color: white;
             border: none;
             padding: 10px 20px;
@@ -64,8 +89,27 @@
             border-radius: 5px;
             cursor: pointer;
         }
-        .flash-btn:hover {
-            background-color: #0056b3;
+        .export-btn:hover, .add-btn:hover {
+            background-color: #45a049;
+        }
+        .scanned-data {
+            font-weight: bold;
+            margin: 20px 0;
+            font-size: 18px;
+            color: #333;
+        }
+        .flash-btn {
+            margin: 10px 0;
+            background-color: #ff4d4d; /* Rojo para apagado */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .flash-btn.on {
+            background-color: #4CAF50; /* Verde para encendido */
         }
     </style>
 </head>
@@ -99,8 +143,9 @@
         const tableBody = document.querySelector("#data-table tbody");
         let lastScannedData = "";
         let isFlashOn = false;
+        let track = null;
 
-        // Iniciar el escáner QR
+        // Iniciar el escáner QR con configuración avanzada
         html5QrCode.start(
             { facingMode: "environment" },
             {
@@ -119,18 +164,30 @@
             (errorMessage) => {
                 console.warn("Error de escaneo:", errorMessage);
             }
-        ).catch((err) => {
+        ).then(() => {
+            track = html5QrCode.getRunningTrack();
+        }).catch((err) => {
             console.error("Error al iniciar la cámara:", err);
         });
 
         // Activar/Desactivar flash
         flashToggleBtn.addEventListener("click", () => {
-            html5QrCode.setTorchState(!isFlashOn).then(() => {
-                isFlashOn = !isFlashOn;
-                flashToggleBtn.textContent = isFlashOn ? "Desactivar Flash" : "Activar Flash";
-            }).catch((err) => {
-                console.error("El flash no es compatible o no se pudo activar:", err);
-            });
+            if (track) {
+                const capabilities = track.getCapabilities();
+                if (capabilities.torch) {
+                    track.applyConstraints({
+                        advanced: [{ torch: !isFlashOn }]
+                    }).then(() => {
+                        isFlashOn = !isFlashOn;
+                        flashToggleBtn.textContent = isFlashOn ? "Desactivar Flash" : "Activar Flash";
+                        flashToggleBtn.classList.toggle("on", isFlashOn);
+                    }).catch((err) => {
+                        console.error("No se pudo controlar el flash:", err);
+                    });
+                } else {
+                    alert("El dispositivo no soporta el control del flash.");
+                }
+            }
         });
 
         // Agregar datos a la tabla
@@ -172,5 +229,4 @@
     </script>
 </body>
 </html>
-
 
